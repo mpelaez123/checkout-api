@@ -19,20 +19,20 @@ export default async function handler(req, res) {
     }
 
     // ✅ construcción de la preferencia
-    const preference = {
-      items: items.map((item) => ({
-        title: String(item.title || "Producto"),
-        quantity: Number(item.quantity || 1),
-        unit_price: Number(item.unit_price || 0),
-        currency_id: "ARS",
-      })),
-      back_urls: {
-        success: "myapp://success",
-        failure: "myapp://failure",
-        pending: "myapp://pending",
-      },
-      auto_return: "approved",
-    };
+const preference = {
+  items: items.map((item) => ({
+    title: String(item.title || "Producto"),
+    quantity: Number(item.quantity || 1),
+    unit_price: Number(item.unit_price || 0),
+    currency_id: "ARS",
+  })),
+  back_urls: {
+    success: "myapp://success",
+    failure: "myapp://failure",
+    pending: "myapp://pending",
+  },
+  auto_return: "approved",
+};
 
     // 🔥 llamada a Mercado Pago
     const response = await mercadopago.preferences.create(preference);
