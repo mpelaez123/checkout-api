@@ -18,10 +18,11 @@ export default async function handler(req, res) {
 
     const preference = {
       items: items.map(item => ({
-        title: item.title,
-        quantity: item.quantity,
-        unit_price: item.unit_price,
-        currency_id: "ARS",
+  title: String(item.title),
+  quantity: Number(item.quantity),
+  unit_price: Number(item.unit_price),
+  currency_id: "ARS",
+})),
       })),
       back_urls: {
         success: "myapp://success",
