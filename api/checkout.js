@@ -40,6 +40,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       init_point: result.init_point,
+      sandbox_init_point: result.sandbox_init_point,
     });
 
   } catch (error) {
