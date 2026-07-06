@@ -5,7 +5,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 if (!getApps().length) {
   // Reemplaza los saltos de línea ocultos para que no rompa el formato JSON
   const serviceAccount = JSON.parse(
-    process.env.FIREBASE_SERVICE_ACCOUNT_KEY.replace(/\\n/g, '\n')
+    process.env.FIREBASE_SERVICE_ACCOUNT_KEY.replace(/\\n/g, '\\n')
   );
   initializeApp({
     credential: cert(serviceAccount)
