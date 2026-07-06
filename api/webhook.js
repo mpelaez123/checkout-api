@@ -1,5 +1,16 @@
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+
+// Vercel se conecta a tu Firebase usando la llave que guardaste recién
+if (!getApps().length) {
+  initializeApp({
+    credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY))
+  });
+}
+const db = getFirestore();
+
 export default async function handler(req, res) {
-  // 1. Validar que Mercado Pago nos esté mandando un POST
+  // Validar que sea un método POST
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Método no permitido' });
   }
@@ -7,12 +18,11 @@ export default async function handler(req, res) {
   try {
     const { type, data } = req.body;
 
-    // 2. Si el aviso es sobre un pago ('payment')
+    // Si el aviso de Mercado Pago es sobre un pago
     if (type === 'payment') {
       const paymentId = data.id;
 
-      // Le preguntamos a Mercado Pago el estado real de ese ID de pago
-      // Usamos las Variables de Entorno (que configuraremos en el Paso 4)
+      // Consultamos a Mercado Pago para verificar los datos reales del pago
       const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
         headers: {
           'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`
@@ -21,22 +31,29 @@ export default async function handler(req, res) {
       
       const paymentData = await mpResponse.json();
 
-      // 3. Si el estado es aprobado ('approved')
+      // Si el estado del pago está aprobado
       if (paymentData.status === 'approved') {
-        const pedidoId = paymentData.external_reference; // El ID del pedido en tu app
+        // Obtenemos el ID del pedido que le mandamos desde FlutterFlow
+        const pedidoId = paymentData.external_reference; 
 
-        // AQUÍ ES DONDE ACTUALIZAMOS EN FIREBASE
-        // Para no complicarte ahora con llaves de Firebase, podes usar la propia API HTTP de Firebase
-        // o dejar este comentario. Cuando cambies de usuario de MP lo conectamos a Firestore en 2 minutos.
-        console.log(`¡Pago Aprobado para el pedido: ${pedidoId}!`);
+        // ¡Actualizamos tu colección de pedidos en Firebase en piloto automático!
+        await db.collection('pedidos').doc(pedidoId).update({
+          estado: 'pagado_a_imprimir',
+          mp_payment_id: paymentId,
+          monto_abonado: paymentData.transaction_amount,
+          metodo_pago: paymentData.payment_method_id,
+          fecha_pago: new Date().toISOString()
+        });
+
+        console.log(`Pedido ${pedidoId} actualizado exitosamente a 'pagado_a_imprimir'.`);
       }
     }
 
-    // 4. Muy importante: Responderle siempre 200 (OK) a Mercado Pago para que no se quede esperando
+    // Responder siempre 200 a Mercado Pago para que no reintente el envío
     return res.status(200).send('OK');
     
   } catch (error) {
-    console.error('Error en el webhook:', error);
+    console.error('Error procesando el webhook:', error);
     return res.status(500).json({ error: error.message });
   }
 }
