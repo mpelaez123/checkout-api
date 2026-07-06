@@ -3,8 +3,12 @@ import { getFirestore } from 'firebase-admin/firestore';
 
 // Vercel se conecta a tu Firebase usando la llave que guardaste recién
 if (!getApps().length) {
+  // Reemplaza los saltos de línea ocultos para que no rompa el formato JSON
+  const serviceAccount = JSON.parse(
+    process.env.FIREBASE_SERVICE_ACCOUNT_KEY.replace(/\\n/g, '\n')
+  );
   initializeApp({
-    credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY))
+    credential: cert(serviceAccount)
   });
 }
 const db = getFirestore();
