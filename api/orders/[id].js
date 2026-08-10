@@ -29,10 +29,11 @@ export default async function handler(req, res) {
       totalAmount: data.totalAmount,
       createdAt: data.createdAt?.toDate?.() ?? null,
       photos: (data.photos || []).map(p => ({
-        cantidad: p.cantidad,
-        imagen: p.imagen,
-        producto: p.producto,
-      })),
+     cantidad: p.cantidad,
+     imagen: p.imagen,
+     producto: p.producto,
+     estado_foto: p.estado_foto || 'pendiente',
+   })),
     });
   }
 
