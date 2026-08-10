@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { items } = req.body;
+    const { items, orderId } = req.body; // 👈 1. Capturamos el orderId que mandás desde FlutterFlow
 
     if (!items || !Array.isArray(items)) {
       return res.status(400).json({ error: "Items inválidos" });
@@ -35,6 +35,7 @@ export default async function handler(req, res) {
           unit_price: Number(item.unit_price || 0),
           currency_id: "ARS",
         })),
+        external_reference: orderId, // 👈 2. Lo vinculamos acá para que el webhook lo reciba después
       },
     });
 
