@@ -10,7 +10,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { items } = req.body;
+    // Recibimos los ítems y tu ID de pedido de FlutterFlow
+    const { items, pedidoId } = req.body;
 
     const preference = {
       items: items.map(item => ({
@@ -19,6 +20,7 @@ export default async function handler(req, res) {
         unit_price: item.unit_price,
         currency_id: "ARS",
       })),
+      external_reference: pedidoId, // 👈 ¡ESTO ES CLAVE PARA QUE FUNCIONE EL WEBHOOK!
       back_urls: {
         success: "myapp://success",
         failure: "myapp://failure",
