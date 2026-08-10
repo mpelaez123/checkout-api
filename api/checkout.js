@@ -35,7 +35,13 @@ export default async function handler(req, res) {
           unit_price: Number(item.unit_price || 0),
           currency_id: "ARS",
         })),
-        external_reference: orderId, // 👈 2. Lo vinculamos acá para que el webhook lo reciba después
+        external_reference: orderId, // 👈 2. Vinculamos el ID del pedido
+        back_urls: {
+          success: "https://www.google.com", // 👈 3. URL de retorno (puedes cambiarla luego por la tuya)
+          pending: "https://www.google.com",
+          failure: "https://www.google.com",
+        },
+        auto_return: "approved", // Redirige automáticamente al usuario si se aprueba
       },
     });
 
