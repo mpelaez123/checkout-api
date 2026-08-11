@@ -44,7 +44,7 @@ export default async function handler(req, res) {
 
           if (pedidoId) {
             // ¡Actualizamos tu colección de pedidos en Firebase!
-            await db.collection('pedidos').doc(pedidoId).update({
+            await db.collection('orders').doc(pedidoId).update({
               status: 'pagado_a_imprimir',
               mp_payment_id: paymentId,
               monto_abonado: paymentData.transaction_amount,
