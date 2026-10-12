@@ -24,6 +24,7 @@ export default async function handler(req, res) {
       totalAmount: data.totalAmount,
       createdAt: data.createdAt?.toDate?.() ?? null,
       photoCount: data.photos?.length ?? 0,
+      cantidadTotal: data.cantidadTotal ?? 0,
     };
   });
 
